@@ -1,6 +1,8 @@
 use crate::cdp::{discovery, CdpClient};
 use crate::injector::css;
 use crate::launcher::codex;
+use crate::theme::manager::ThemeManager;
+use std::path::PathBuf;
 
 #[tauri::command]
 pub async fn launch_codex() -> Result<String, String> {
@@ -18,9 +20,19 @@ pub async fn check_codex_status() -> Result<String, String> {
 
 #[tauri::command]
 pub async fn apply_default_theme() -> Result<String, String> {
+    apply_theme("default").await
+}
+
+#[tauri::command]
+pub async fn apply_theme(name: String) -> Result<String, String> {
     let endpoint = discovery::find_endpoint(9222).await?;
     let client = CdpClient::new(endpoint);
     client.connect().await?;
-    client.inject_css(css::default_css()).await?;
-    Ok("theme applied".to_string())
+
+    let manager = ThemeManager::new(PathBuf::from("themes"));
+    let theme_css = manager.load_css(&name)?;
+
+    client.inject_css(theme_css).await?;
+
+    Ok(format!("theme applied: {}", name))
 }
