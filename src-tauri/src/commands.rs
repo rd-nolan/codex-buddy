@@ -40,15 +40,18 @@ pub async fn check_codex_status(state: State<'_, StatusStore>) -> Result<String,
 
 #[tauri::command]
 pub async fn apply_default_theme(state: State<'_, StatusStore>) -> Result<String, String> {
-    apply_theme_inner("default".to_string(), &state).await
+    apply_theme_runtime("default".to_string(), &state).await
 }
 
 #[tauri::command]
 pub async fn apply_theme(name: String, state: State<'_, StatusStore>) -> Result<String, String> {
-    apply_theme_inner(name, &state).await
+    apply_theme_runtime(name, &state).await
 }
 
-async fn apply_theme_inner(name: String, state: &StatusStore) -> Result<String, String> {
+pub(crate) async fn apply_theme_runtime(
+    name: String,
+    state: &StatusStore,
+) -> Result<String, String> {
     let endpoint = discovery::find_endpoint(9222).await?;
     let client = CdpClient::new(endpoint);
     client.connect().await?;
@@ -64,6 +67,7 @@ async fn apply_theme_inner(name: String, state: &StatusStore) -> Result<String, 
 
     if let Ok(mut status) = state.write() {
         status.current_theme = name.clone();
+        status.codex_running = true;
         status.cdp_connected = true;
         status.last_injection = "success".to_string();
     }
@@ -84,7 +88,7 @@ pub async fn restore_theme(state: State<'_, StatusStore>) -> Result<String, Stri
         return Ok("auto apply disabled".to_string());
     }
 
-    apply_theme_inner(settings.current_theme, &state).await
+    apply_theme_runtime(settings.current_theme, &state).await
 }
 
 #[tauri::command]
