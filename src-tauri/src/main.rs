@@ -6,6 +6,7 @@ mod injector;
 mod launcher;
 mod settings;
 mod startup;
+mod status;
 mod theme;
 mod tray;
 
