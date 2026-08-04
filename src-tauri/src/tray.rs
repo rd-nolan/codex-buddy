@@ -3,7 +3,7 @@
 use crate::tray_actions::TrayAction;
 use tauri::menu::{Menu, MenuItem, Submenu};
 use tauri::tray::TrayIconBuilder;
-use tauri::{App, AppHandle};
+use tauri::{App, AppHandle, Emitter};
 
 pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
     let open_codex = MenuItem::with_id(app, "open_codex", "🚀 Open Codex", true, None::<&str>)?;
@@ -33,7 +33,7 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
                 match action {
                     TrayAction::Quit => app.exit(0),
                     TrayAction::SelectTheme(theme) => {
-                        println!("Selected theme: {}", theme);
+                        let _ = app.emit("theme-selected", theme);
                     }
                     _ => {}
                 }
