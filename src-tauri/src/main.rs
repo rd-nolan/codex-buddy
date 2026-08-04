@@ -10,6 +10,7 @@ mod status;
 mod status_store;
 mod theme;
 mod tray;
+mod tray_monitor;
 
 #[tokio::main]
 async fn main() {
@@ -20,9 +21,15 @@ async fn main() {
     let status_store = status_store::create_store();
 
     tauri::Builder::default()
-        .manage(status_store)
+        .manage(status_store.clone())
         .setup(|app| {
             tray::setup_tray(app)?;
+
+            tray_monitor::start(
+                status_store.clone(),
+                app.handle().clone(),
+            );
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
