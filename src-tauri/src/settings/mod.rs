@@ -6,6 +6,7 @@ use std::path::PathBuf;
 pub struct Settings {
     pub current_theme: String,
     pub auto_apply: bool,
+    pub auto_start_codex: bool,
 }
 
 impl Default for Settings {
@@ -13,6 +14,7 @@ impl Default for Settings {
         Self {
             current_theme: "default".to_string(),
             auto_apply: true,
+            auto_start_codex: true,
         }
     }
 }
