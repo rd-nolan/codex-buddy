@@ -20,7 +20,7 @@ pub async fn check_codex_status() -> Result<String, String> {
 
 #[tauri::command]
 pub async fn apply_default_theme() -> Result<String, String> {
-    apply_theme("default").await
+    apply_theme("default".to_string()).await
 }
 
 #[tauri::command]
@@ -32,7 +32,7 @@ pub async fn apply_theme(name: String) -> Result<String, String> {
     let manager = ThemeManager::new(PathBuf::from("themes"));
     let theme_css = manager.load_css(&name)?;
 
-    client.inject_css(theme_css).await?;
+    client.inject_js(css::managed_css(theme_css)).await?;
 
     Ok(format!("theme applied: {}", name))
 }
