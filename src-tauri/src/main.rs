@@ -4,13 +4,15 @@ mod cdp;
 mod commands;
 mod injector;
 mod launcher;
+mod theme;
 
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             commands::launch_codex,
             commands::check_codex_status,
-            commands::apply_default_theme
+            commands::apply_default_theme,
+            commands::apply_theme
         ])
         .run(tauri::generate_context!())
         .expect("error while running Codex Buddy");
