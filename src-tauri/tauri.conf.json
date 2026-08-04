@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Codex Buddy",
+  "version": "0.1.0",
+  "identifier": "com.codexbuddy.app",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Codex Buddy",
+        "width": 900,
+        "height": 600
+      }
+    ]
+  }
+}
