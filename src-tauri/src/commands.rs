@@ -1,6 +1,7 @@
 use crate::cdp::{discovery, CdpClient};
 use crate::injector::css;
 use crate::launcher::codex;
+use crate::settings;
 use crate::theme::manager::ThemeManager;
 use std::path::PathBuf;
 
@@ -34,5 +35,14 @@ pub async fn apply_theme(name: String) -> Result<String, String> {
 
     client.inject_js(css::managed_css(theme_css)).await?;
 
+    let mut current = settings::load();
+    current.current_theme = name.clone();
+    settings::save(&current)?;
+
     Ok(format!("theme applied: {}", name))
+}
+
+#[tauri::command]
+pub fn current_theme() -> String {
+    settings::load().current_theme
 }
