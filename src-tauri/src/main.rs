@@ -5,6 +5,7 @@ mod commands;
 mod injector;
 mod launcher;
 mod settings;
+mod startup;
 mod theme;
 
 fn main() {
