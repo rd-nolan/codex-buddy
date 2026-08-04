@@ -3,5 +3,7 @@
 //! Responsible for communicating with Codex Electron renderer.
 
 pub mod client;
+pub mod discovery;
+pub mod protocol;
 
 pub use client::CdpClient;
