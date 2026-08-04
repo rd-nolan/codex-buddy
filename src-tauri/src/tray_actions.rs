@@ -4,6 +4,7 @@
 pub enum TrayAction {
     OpenCodex,
     ApplyTheme,
+    SelectTheme(String),
     Quit,
 }
 
@@ -13,6 +14,14 @@ impl TrayAction {
             "open_codex" => Some(Self::OpenCodex),
             "apply_theme" => Some(Self::ApplyTheme),
             "quit" => Some(Self::Quit),
+            value if value.starts_with("theme_") => {
+                let theme = value.trim_start_matches("theme_").to_string();
+                if theme.is_empty() {
+                    None
+                } else {
+                    Some(Self::SelectTheme(theme))
+                }
+            }
             _ => None,
         }
     }
