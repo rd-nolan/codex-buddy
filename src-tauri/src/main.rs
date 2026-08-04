@@ -7,6 +7,7 @@ mod launcher;
 mod settings;
 mod startup;
 mod theme;
+mod tray;
 
 #[tokio::main]
 async fn main() {
@@ -15,6 +16,10 @@ async fn main() {
     }
 
     tauri::Builder::default()
+        .setup(|app| {
+            tray::setup_tray(app)?;
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             commands::launch_codex,
             commands::check_codex_status,
