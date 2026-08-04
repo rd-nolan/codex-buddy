@@ -10,6 +10,7 @@ mod status;
 mod status_store;
 mod theme;
 mod tray;
+mod tray_actions;
 mod tray_monitor;
 
 #[tokio::main]
