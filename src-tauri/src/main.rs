@@ -17,7 +17,10 @@ async fn main() {
         eprintln!("startup error: {}", error);
     }
 
+    let status_store = status_store::create_store();
+
     tauri::Builder::default()
+        .manage(status_store)
         .setup(|app| {
             tray::setup_tray(app)?;
             Ok(())
@@ -28,7 +31,8 @@ async fn main() {
             commands::apply_default_theme,
             commands::apply_theme,
             commands::current_theme,
-            commands::restore_theme
+            commands::restore_theme,
+            commands::get_status
         ])
         .run(tauri::generate_context!())
         .expect("error while running Codex Buddy");
