@@ -21,6 +21,14 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
         None::<&str>,
     )?;
 
+    let status = MenuItem::with_id(
+        app,
+        "status",
+        "Codex Buddy Ready",
+        true,
+        None::<&str>,
+    )?;
+
     let quit = MenuItem::with_id(
         app,
         "quit",
@@ -31,7 +39,7 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
 
     let menu = Menu::with_items(
         app,
-        &[&open_codex, &apply_theme, &quit],
+        &[&open_codex, &apply_theme, &status, &quit],
     )?;
 
     TrayIconBuilder::new()
@@ -40,6 +48,12 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
             match event.id().as_ref() {
                 "quit" => {
                     app.exit(0);
+                }
+                "open_codex" => {
+                    // Reuse launcher command in next iteration.
+                }
+                "apply_theme" => {
+                    // Reuse theme command in next iteration.
                 }
                 _ => {}
             }
