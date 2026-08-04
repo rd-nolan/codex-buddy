@@ -7,6 +7,7 @@ mod launcher;
 mod settings;
 mod startup;
 mod status;
+mod status_store;
 mod theme;
 mod tray;
 
