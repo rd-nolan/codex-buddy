@@ -1,8 +1,9 @@
 //! System tray support for Codex Buddy
 
+use crate::tray_actions::TrayAction;
 use tauri::menu::{Menu, MenuItem, Submenu};
 use tauri::tray::TrayIconBuilder;
-use tauri::{App, AppHandle, Manager};
+use tauri::{App, AppHandle};
 
 pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
     let open_codex = MenuItem::with_id(app, "open_codex", "🚀 Open Codex", true, None::<&str>)?;
@@ -22,23 +23,20 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
     let status = MenuItem::with_id(app, "status", "🟡 Initializing", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "❌ Quit Codex Buddy", true, None::<&str>)?;
 
-    let menu = Menu::with_items(
-        app,
-        &[&status, &themes, &open_codex, &apply_theme, &quit],
-    )?;
+    let menu = Menu::with_items(app, &[&status, &themes, &open_codex, &apply_theme, &quit])?;
 
     TrayIconBuilder::new()
         .id("main")
         .menu(&menu)
         .on_menu_event(|app, event| {
-            match event.id().as_ref() {
-                "quit" => app.exit(0),
-                "theme_default" => {}
-                "theme_glass" => {}
-                "theme_midnight" => {}
-                "open_codex" => {}
-                "apply_theme" => {}
-                _ => {}
+            if let Some(action) = TrayAction::from_id(event.id().as_ref()) {
+                match action {
+                    TrayAction::Quit => app.exit(0),
+                    TrayAction::SelectTheme(theme) => {
+                        println!("Selected theme: {}", theme);
+                    }
+                    _ => {}
+                }
             }
         })
         .build(app)?;
