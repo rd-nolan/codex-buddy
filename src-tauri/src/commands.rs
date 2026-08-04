@@ -9,26 +9,46 @@ use std::path::PathBuf;
 use tauri::State;
 
 #[tauri::command]
-pub async fn launch_codex() -> Result<String, String> {
+pub async fn launch_codex(state: State<'_, StatusStore>) -> Result<String, String> {
     codex::launch(9222)?;
+
+    if let Ok(mut status) = state.write() {
+        status.codex_running = true;
+    }
+
     Ok("Codex started".to_string())
 }
 
 #[tauri::command]
-pub async fn check_codex_status() -> Result<String, String> {
+pub async fn check_codex_status(state: State<'_, StatusStore>) -> Result<String, String> {
     match discovery::find_endpoint(9222).await {
-        Ok(_) => Ok("connected".to_string()),
-        Err(_) => Ok("offline".to_string()),
+        Ok(_) => {
+            if let Ok(mut status) = state.write() {
+                status.codex_running = true;
+                status.cdp_connected = true;
+            }
+            Ok("connected".to_string())
+        }
+        Err(_) => {
+            if let Ok(mut status) = state.write() {
+                status.cdp_connected = false;
+            }
+            Ok("offline".to_string())
+        }
     }
 }
 
 #[tauri::command]
-pub async fn apply_default_theme() -> Result<String, String> {
-    apply_theme("default".to_string()).await
+pub async fn apply_default_theme(state: State<'_, StatusStore>) -> Result<String, String> {
+    apply_theme_inner("default".to_string(), &state).await
 }
 
 #[tauri::command]
-pub async fn apply_theme(name: String) -> Result<String, String> {
+pub async fn apply_theme(name: String, state: State<'_, StatusStore>) -> Result<String, String> {
+    apply_theme_inner(name, &state).await
+}
+
+async fn apply_theme_inner(name: String, state: &StatusStore) -> Result<String, String> {
     let endpoint = discovery::find_endpoint(9222).await?;
     let client = CdpClient::new(endpoint);
     client.connect().await?;
@@ -42,6 +62,12 @@ pub async fn apply_theme(name: String) -> Result<String, String> {
     current.current_theme = name.clone();
     settings::save(&current)?;
 
+    if let Ok(mut status) = state.write() {
+        status.current_theme = name.clone();
+        status.cdp_connected = true;
+        status.last_injection = "success".to_string();
+    }
+
     Ok(format!("theme applied: {}", name))
 }
 
@@ -51,14 +77,14 @@ pub fn current_theme() -> String {
 }
 
 #[tauri::command]
-pub async fn restore_theme() -> Result<String, String> {
+pub async fn restore_theme(state: State<'_, StatusStore>) -> Result<String, String> {
     let settings = settings::load();
 
     if !settings.auto_apply {
         return Ok("auto apply disabled".to_string());
     }
 
-    apply_theme(settings.current_theme).await
+    apply_theme_inner(settings.current_theme, &state).await
 }
 
 #[tauri::command]
