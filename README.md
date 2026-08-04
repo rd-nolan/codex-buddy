@@ -31,9 +31,11 @@ Codex Buddy provides runtime customization for Codex desktop through Chrome DevT
 - [x] Theme manager
 - [x] Theme file structure
 - [x] Theme scanner
-- [ ] Theme selector UI
+- [x] Theme API foundation
+- [x] Theme selector UI
 - [ ] Theme preview
 - [ ] One-click theme switching
+- [ ] Theme marketplace support
 
 ### v0.3 Extension Platform
 
