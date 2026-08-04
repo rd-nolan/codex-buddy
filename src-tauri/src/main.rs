@@ -4,6 +4,7 @@ mod cdp;
 mod commands;
 mod injector;
 mod launcher;
+mod settings;
 mod theme;
 
 fn main() {
@@ -12,7 +13,8 @@ fn main() {
             commands::launch_codex,
             commands::check_codex_status,
             commands::apply_default_theme,
-            commands::apply_theme
+            commands::apply_theme,
+            commands::current_theme
         ])
         .run(tauri::generate_context!())
         .expect("error while running Codex Buddy");
