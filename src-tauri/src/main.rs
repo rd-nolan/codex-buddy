@@ -8,7 +8,12 @@ mod settings;
 mod startup;
 mod theme;
 
-fn main() {
+#[tokio::main]
+async fn main() {
+    if let Err(error) = startup::initialize().await {
+        eprintln!("startup error: {}", error);
+    }
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             commands::launch_codex,
