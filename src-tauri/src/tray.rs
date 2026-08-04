@@ -1,16 +1,31 @@
 //! System tray support for Codex Buddy
 
-use tauri::menu::{Menu, MenuItem};
+use tauri::menu::{Menu, MenuItem, Submenu};
 use tauri::tray::TrayIconBuilder;
 use tauri::{App, AppHandle, Manager};
 
 pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
     let open_codex = MenuItem::with_id(app, "open_codex", "🚀 Open Codex", true, None::<&str>)?;
     let apply_theme = MenuItem::with_id(app, "apply_theme", "🎨 Apply Current Theme", true, None::<&str>)?;
+
+    let default_theme = MenuItem::with_id(app, "theme_default", "Default", true, None::<&str>)?;
+    let glass_theme = MenuItem::with_id(app, "theme_glass", "Glass", true, None::<&str>)?;
+    let midnight_theme = MenuItem::with_id(app, "theme_midnight", "Midnight", true, None::<&str>)?;
+
+    let themes = Submenu::with_items(
+        app,
+        "🎨 Themes",
+        true,
+        &[&default_theme, &glass_theme, &midnight_theme],
+    )?;
+
     let status = MenuItem::with_id(app, "status", "🟡 Initializing", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "❌ Quit Codex Buddy", true, None::<&str>)?;
 
-    let menu = Menu::with_items(app, &[&open_codex, &apply_theme, &status, &quit])?;
+    let menu = Menu::with_items(
+        app,
+        &[&status, &themes, &open_codex, &apply_theme, &quit],
+    )?;
 
     TrayIconBuilder::new()
         .id("main")
@@ -18,6 +33,9 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
         .on_menu_event(|app, event| {
             match event.id().as_ref() {
                 "quit" => app.exit(0),
+                "theme_default" => {}
+                "theme_glass" => {}
+                "theme_midnight" => {}
                 "open_codex" => {}
                 "apply_theme" => {}
                 _ => {}
