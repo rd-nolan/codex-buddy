@@ -14,7 +14,8 @@ fn main() {
             commands::check_codex_status,
             commands::apply_default_theme,
             commands::apply_theme,
-            commands::current_theme
+            commands::current_theme,
+            commands::restore_theme
         ])
         .run(tauri::generate_context!())
         .expect("error while running Codex Buddy");
