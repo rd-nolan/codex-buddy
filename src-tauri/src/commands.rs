@@ -2,8 +2,11 @@ use crate::cdp::{discovery, CdpClient};
 use crate::injector::css;
 use crate::launcher::codex;
 use crate::settings;
+use crate::status::AppStatus;
+use crate::status_store::{self, StatusStore};
 use crate::theme::manager::ThemeManager;
 use std::path::PathBuf;
+use tauri::State;
 
 #[tauri::command]
 pub async fn launch_codex() -> Result<String, String> {
@@ -56,4 +59,9 @@ pub async fn restore_theme() -> Result<String, String> {
     }
 
     apply_theme(settings.current_theme).await
+}
+
+#[tauri::command]
+pub fn get_status(state: State<'_, StatusStore>) -> AppStatus {
+    status_store::snapshot(&state)
 }
