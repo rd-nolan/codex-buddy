@@ -12,6 +12,8 @@ mod theme;
 mod tray;
 mod tray_monitor;
 
+use tauri::Listener;
+
 #[tokio::main]
 async fn main() {
     if let Err(error) = startup::initialize().await {
@@ -25,9 +27,22 @@ async fn main() {
         .setup(|app| {
             tray::setup_tray(app)?;
 
+            let handle = app.handle().clone();
+            let store = status_store.clone();
+
+            app.listen("theme-selected", move |event| {
+                if let Some(theme) = event.payload() {
+                    let theme = theme.trim_matches('"').to_string();
+                    let store = store.clone();
+                    tokio::spawn(async move {
+                        let _ = commands::apply_theme_runtime(theme, store).await;
+                    });
+                }
+            });
+
             tray_monitor::start(
                 status_store.clone(),
-                app.handle().clone(),
+                handle,
             );
 
             Ok(())
