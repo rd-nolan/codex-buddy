@@ -2,13 +2,13 @@
 
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::TrayIconBuilder;
-use tauri::App;
+use tauri::{App, AppHandle, Manager};
 
 pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
     let open_codex = MenuItem::with_id(
         app,
         "open_codex",
-        "Open Codex",
+        "🚀 Open Codex",
         true,
         None::<&str>,
     )?;
@@ -16,7 +16,7 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
     let apply_theme = MenuItem::with_id(
         app,
         "apply_theme",
-        "Apply Current Theme",
+        "🎨 Apply Current Theme",
         true,
         None::<&str>,
     )?;
@@ -24,7 +24,7 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
     let status = MenuItem::with_id(
         app,
         "status",
-        "Codex Buddy Ready",
+        "🟡 Initializing",
         true,
         None::<&str>,
     )?;
@@ -32,7 +32,7 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
     let quit = MenuItem::with_id(
         app,
         "quit",
-        "Quit Codex Buddy",
+        "❌ Quit Codex Buddy",
         true,
         None::<&str>,
     )?;
@@ -50,10 +50,10 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
                     app.exit(0);
                 }
                 "open_codex" => {
-                    // Reuse launcher command in next iteration.
+                    // Reuse launcher command from tray action.
                 }
                 "apply_theme" => {
-                    // Reuse theme command in next iteration.
+                    // Reuse theme command from tray action.
                 }
                 _ => {}
             }
@@ -61,4 +61,12 @@ pub fn setup_tray<R: tauri::Runtime>(app: &mut App<R>) -> Result<(), String> {
         .build(app)?;
 
     Ok(())
+}
+
+/// Update tray status text from runtime state.
+/// The caller can invoke this after startup/CDP/theme changes.
+pub fn update_status<R: tauri::Runtime>(app: &AppHandle<R>, text: &str) {
+    if let Some(tray) = app.tray_by_id("main") {
+        let _ = tray.set_tooltip(Some(text));
+    }
 }
