@@ -1,0 +1,44 @@
+/*
+ * Codex Buddy Default Theme
+ * Runtime injected CSS
+ */
+
+:root {
+  --codex-buddy-bg: #0d1117;
+  --codex-buddy-panel: rgba(255, 255, 255, 0.06);
+  --codex-buddy-border: rgba(255, 255, 255, 0.12);
+}
+
+/* Main window */
+body {
+  background: var(--codex-buddy-bg) !important;
+}
+
+/* Glass panels */
+[class*="sidebar"],
+[class*="panel"] {
+  background: var(--codex-buddy-panel) !important;
+  backdrop-filter: blur(14px);
+  border-color: var(--codex-buddy-border) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: rgba(255,255,255,.2);
+}
+
+/* Codex Buddy marker */
+body::before {
+  content: 'Codex Buddy';
+  position: fixed;
+  top: 12px;
+  right: 18px;
+  z-index: 999999;
+  font-size: 12px;
+  opacity: .35;
+}
