@@ -46,3 +46,14 @@ pub async fn apply_theme(name: String) -> Result<String, String> {
 pub fn current_theme() -> String {
     settings::load().current_theme
 }
+
+#[tauri::command]
+pub async fn restore_theme() -> Result<String, String> {
+    let settings = settings::load();
+
+    if !settings.auto_apply {
+        return Ok("auto apply disabled".to_string());
+    }
+
+    apply_theme(settings.current_theme).await
+}
